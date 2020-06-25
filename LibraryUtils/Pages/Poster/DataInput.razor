@@ -1,0 +1,75 @@
+@using FlacLibSharp
+@using BlazorInputFile
+@using System.IO
+
+<div class="splitrow">
+    <div class="col-12 p-0">
+        <div class="splitcolumn">
+            <div class="dropzone @dropClass rounded" style="text-align: center;">
+                <InputFile multiple title="" OnChange="HandleInput" @ondragenter="HandleDragEnter" @ondragleave="HandleDragLeave" />
+                <p class="dropzone-text">Upload<br></p>
+                <p class="dropzone-text" style="font-size: small;">FLAC / mp3 files, folders, musicbrainz URL</p>
+            </div>
+            @if (isUploading) {
+                <div class="alert alert-info" role="alert">Uploading...<Spinner /></div>
+            }
+            @if (!string.IsNullOrEmpty(message)) {
+                <div class="alert alert-danger" role="alert">
+                    @message
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Action<FlacFile> FileUploadedCallback { get; set; }
+
+    public FlacFile file { get; set; }
+
+    private string message = "";
+    private string dropClass = "";
+    private bool isUploading = false;
+
+    private void HandleDragEnter()
+    {
+        dropClass = "dropzone-drag";
+    }
+
+    private void HandleDragLeave()
+    {
+        dropClass = "";
+    }
+
+    async Task HandleInput(IFileListEntry[] files)
+    {
+        dropClass = "";
+        var inputFile = files.FirstOrDefault();
+        if (inputFile != null)
+        {
+            using (var ms = new MemoryStream())
+            {
+                isUploading = true;
+                await inputFile.Data.CopyToAsync(ms);
+                ms.Position = 0;
+
+                try
+                {
+                    file = new FlacFile(ms);
+
+                    if (file != null)
+                    {
+                        FileUploadedCallback(file);
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    message = ex.ToString();
+                }
+
+                isUploading = false;
+            }
+        }
+    }
+}

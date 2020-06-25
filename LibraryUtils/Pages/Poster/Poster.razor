@@ -1,0 +1,150 @@
+﻿@page "/poster"
+@using FlacLibSharp
+
+<link href="css/component-poster.css" rel="stylesheet" />
+
+<div id="main-component">
+    <h1>Album Age Poster</h1>
+
+    <DataInput FileUploadedCallback=@FileUploadedCallback></DataInput>
+
+    <div class="splitrow">
+        <div class="splitcolumn">
+            <div class="fieldcontainer">
+                <p class="fieldlabel">MusicBrainz URL</p>
+                <input type="url" name="url" class="textbox" style="width: 100%;" value=@MusicBrainzUrl>
+                <button type="button" name="Clear" class="btn btn-primary custom-button">Clear</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="splitrow">
+        <div class="splitcolumn">
+            <form>
+                <div class="form-group">
+                    <label for="inputArtist" class="text-white">Artist</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-user"></i></span>
+                        </div>
+                        <input type="text" name="artist" class="form-control" placeholder="Enter artist name" id="inputArtist" aria-describedby="artistHelp">
+                    </div>
+                    <small id="artistHelp" class="form-text text-white">Artist name should be written using latin or cyrilic script followed by the original script in parentheses.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputAlbum" class="text-white">Album</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-compact-disc"></i></span>
+                        </div>
+                        <input type="text" name="album" class="form-control" placeholder="Enter album name" id="inputAlbum" aria-describedby="albumHelp">
+                    </div>
+                    <small id="albumHelp" class="form-text text-white">Album guidelines.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputLabel" class="text-white">Label</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="far fa-building"></i></span>
+                        </div>
+                        <input type="text" name="label" class="form-control" placeholder="Enter label information" id="inputLabel">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputCatNo" class="text-white">Catalogue Number</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+                        </div>
+                        <input type="text" name="catNo" class="form-control" placeholder="Enter Catalogue number" id="inputCatNo">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputArtistCountry" class="text-white">Artist Country</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-globe-americas"></i></span>
+                        </div>
+                        <input type="text" name="artistCountry" class="form-control" placeholder="Enter Artist country" id="inputArtistCountry" aria-describedby="artistCountryHelp">
+                    </div>
+                    <small id="artistCountryHelp" class="form-text text-white">Artist country information.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputYear" class="text-white">Year</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-calendar-day"></i></span>
+                        </div>
+                        <input type="text" name="year" class="form-control" placeholder="Enter Year" id="inputYear" aria-describedby="yearHelp">
+                    </div>
+                    <small id="yearHelp" class="form-text text-white">The year the release was first published.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputReleaseType" class="text-white">Type</label>
+                        <select name="releaseType" id="inputReleaseType">
+                        <option value="album">Album</option>
+                        <option value="ep">EP</option>
+                        <option value="single">Single</option>
+                    </select>
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" name="Soundtrack" class="form-check-input" id="inputSoundtrack">
+                        <label class="form-check-label">Soundtrack</label>
+                    </div>
+                    <div class="form-check form-check-inline">                              
+                        <input type="checkbox" name="OST" class="form-check-input" id="inputOST">
+                        <label class="form-check-label" for="inputOST">OST</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" name="Score" id="inputScore" class="form-check-input">
+                        <label class="form-check-label" for="inputScore">Score</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="?" class="text-white">Styles</label>
+                </div>
+            </form>
+        </div>
+
+        <div class="splitcolumn">
+            <div class="fieldcontainer">
+                <p class="fieldlabel">Output</p>
+                <textarea name="output" rows="10" cols="50" class="textbox"></textarea>
+                <button type="button" name="generate" class="btn btn-primary custom-button">Generate</button>
+            </div>
+
+            <div class="fieldcontainer">
+                <p class="fieldlabel">Album Description</p>
+                <input type="text" name="albumdescription" class="textbox">
+            </div>
+
+            <div class="fieldcontainer">
+                <p class="fieldlabel">Found # tags in the description</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@code{
+    private void FileUploadedCallback(FlacFile file)
+    {
+        if (!string.IsNullOrEmpty(file.VorbisComment?.Artist?.Value))
+        {
+            MusicBrainzUrl = file.VorbisComment.Artist.Value;
+        }
+        else
+        {
+
+        }
+        StateHasChanged();
+    }
+
+    private string MusicBrainzUrl { get; set; }
+}
