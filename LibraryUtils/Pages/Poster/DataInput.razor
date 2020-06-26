@@ -5,19 +5,21 @@
 <div class="splitrow">
     <div class="col-12 p-0">
         <div class="splitcolumn">
-            <div class="dropzone @dropClass rounded" style="text-align: center;">
-                <InputFile multiple title="" OnChange="HandleInput" @ondragenter="HandleDragEnter" @ondragleave="HandleDragLeave" />
-                <p class="dropzone-text">Upload<br></p>
-                <p class="dropzone-text" style="font-size: small;">FLAC / mp3 files, folders, musicbrainz URL</p>
-            </div>
-            @if (isUploading) {
-                <div class="alert alert-info" role="alert">Uploading...<Spinner /></div>
-            }
-            @if (!string.IsNullOrEmpty(message)) {
-                <div class="alert alert-danger" role="alert">
-                    @message
+            <form>
+                <div class="dropzone @dropClass unselectable" style="text-align: center;">
+                    <InputFile multiple title="" OnChange="HandleInput" @ondragenter="HandleDragEnter" @ondragleave="HandleDragLeave" />
+                    <p class="dropzone-text">Upload<br></p>
+                    <p class="dropzone-text" style="font-size: small;">FLAC / mp3 files, folders, musicbrainz URL</p>
                 </div>
-            }
+                @if (isUploading) {
+                    <div class="alert alert-info" role="alert">Uploading...<Spinner /></div>
+                }
+                @if (!string.IsNullOrEmpty(message)) {
+                    <div class="alert alert-danger" role="alert">
+                        @message
+                    </div>
+                }
+            </form>
         </div>
     </div>
 </div>

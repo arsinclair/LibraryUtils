@@ -10,11 +10,19 @@
 
     <div class="splitrow">
         <div class="splitcolumn">
-            <div class="fieldcontainer">
-                <p class="fieldlabel">MusicBrainz URL</p>
-                <input type="url" name="url" class="textbox" style="width: 100%;" value=@MusicBrainzUrl>
-                <button type="button" name="Clear" class="btn btn-primary custom-button">Clear</button>
-            </div>
+            <form>
+                <div class="form-group no-bottom-margin">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text text-white no-right-border unselectable">MusicBrainz URL</span>
+                        </div>
+                        <input type="url" name="url" class="form-control no-right-border" value=@MusicBrainzUrl autocomplete="off">
+                        <div class="input-group-append">
+                            <button type="button" name="Clear" class="btn btn-outline-secondary">Clear</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -22,10 +30,10 @@
         <div class="splitcolumn">
             <form>
                 <div class="form-group">
-                    <label for="inputArtist" class="text-white">Artist</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fa fa-user"></i></span>
+                            <span class="input-group-text no-right-border"><i class="fa fa-user"></i></span>
+                            <span class="input-group-text text-white no-right-border unselectable">Artist</span>
                         </div>
                         <input type="text" name="artist" class="form-control" placeholder="Enter artist name" id="inputArtist" aria-describedby="artistHelp">
                     </div>
@@ -33,10 +41,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="inputAlbum" class="text-white">Album</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-compact-disc"></i></span>
+                            <span class="input-group-text no-right-border"><i class="fas fa-compact-disc"></i></span>
+                            <span class="input-group-text text-white no-right-border unselectable">Album</span>
                         </div>
                         <input type="text" name="album" class="form-control" placeholder="Enter album name" id="inputAlbum" aria-describedby="albumHelp">
                     </div>
@@ -44,45 +52,50 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="inputLabel" class="text-white">Label</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="far fa-building"></i></span>
+                            <span class="input-group-text no-right-border"><i class="far fa-building"></i></span>
+                            <span class="input-group-text text-white no-right-border unselectable">Label</span>
                         </div>
                         <input type="text" name="label" class="form-control" placeholder="Enter label information" id="inputLabel">
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="inputCatNo" class="text-white">Catalogue Number</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+                            <span class="input-group-text no-right-border"><i class="fas fa-hashtag"></i></span>
+                            <span class="input-group-text text-white no-right-border unselectable">Catalogue Number</span>
                         </div>
                         <input type="text" name="catNo" class="form-control" placeholder="Enter Catalogue number" id="inputCatNo">
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="inputArtistCountry" class="text-white">Artist Country</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-globe-americas"></i></span>
-                        </div>
-                        <input type="text" name="artistCountry" class="form-control" placeholder="Enter Artist country" id="inputArtistCountry" aria-describedby="artistCountryHelp">
+                <div class="form-row align-items-center">
+                    <div class="col-8">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text no-right-border"><i class="fas fa-globe-americas"></i></span>
+                                    <span class="input-group-text text-white no-right-border unselectable">Artist Country</span>
+                                </div>
+                                <input type="text" name="artistCountry" class="form-control" placeholder="Enter Artist country" id="inputArtistCountry" aria-describedby="artistCountryHelp">
+                            </div>
+                            <small id="artistCountryHelp" class="form-text text-white">Artist country information.</small>
+                        </div>    
                     </div>
-                    <small id="artistCountryHelp" class="form-text text-white">Artist country information.</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="inputYear" class="text-white">Year</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-calendar-day"></i></span>
+                    <div class="col">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text no-right-border"><i class="fas fa-calendar-day"></i></span>
+                                    <span class="input-group-text text-white no-right-border unselectable">Year</span>
+                                </div>
+                                <input type="text" name="year" class="form-control" placeholder="Enter Year" id="inputYear" aria-describedby="yearHelp">
+                            </div>
+                            <small id="yearHelp" class="form-text text-white">The year the release was first published.</small>
                         </div>
-                        <input type="text" name="year" class="form-control" placeholder="Enter Year" id="inputYear" aria-describedby="yearHelp">
                     </div>
-                    <small id="yearHelp" class="form-text text-white">The year the release was first published.</small>
                 </div>
 
                 <div class="form-group">
@@ -113,22 +126,33 @@
         </div>
 
         <div class="splitcolumn">
-            <div class="fieldcontainer">
-                <p class="fieldlabel">Output</p>
-                <textarea name="output" rows="10" cols="50" class="textbox"></textarea>
-                <button type="button" name="generate" class="btn btn-primary custom-button">Generate</button>
-            </div>
+            <form>
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text no-right-border"><i class="fas fa-align-left"></i></span>
+                            <span class="input-group-text text-white no-right-border unselectable">Output</span>
+                        </div>
+                        <textarea name="output" cols="50" class="form-control no-right-border" placeholder="Press 'Generate' button to make a description" id="inputOutput"></textarea>
+                        <button type="button" name="generate" class="btn btn-outline-secondary">Generate</button>
+                    </div>
+                </div>
 
-            <div class="fieldcontainer">
-                <p class="fieldlabel">Album Description</p>
-                <input type="text" name="albumdescription" class="textbox">
-            </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text no-right-border"><i class="fas fa-paragraph"></i></span>
+                            <span class="input-group-text text-white no-right-border unselectable">Album Description</span>
+                        </div>
+                        <input type="text" name="albumdescription" class="form-control">
+                    </div>
+                </div>
 
-            <div class="fieldcontainer">
-                <p class="fieldlabel">Found # tags in the description</p>
-            </div>
+                <div class="form-group">
+                    <label class="text-white">Found # tags in the description</label>
+                </div>
+            </form>
         </div>
-
     </div>
 </div>
 
