@@ -2,11 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <BlazorLinkOnBuild Condition="'$(Configuration)'!='Release'">false</BlazorLinkOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BlazorInputFile" Version="0.2.0" />
-    <PackageReference Include="FlacLibSharp" Version="3.2.0" />
+    <PackageReference Include="FlacLibSharp" Version="3.2.1" />
+    <PackageReference Include="ReleaseLib" Version="1.12.0" />
   </ItemGroup>
 
 </Project>
