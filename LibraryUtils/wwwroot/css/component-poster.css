@@ -10,12 +10,32 @@ input,
 select,
 textarea,
 button,
+.input-container,
 .input-group-text {
     font-family: monospace !important;
     color: #212529 !important;
     border-radius: 0 !important;
     border: 1px solid #00000057 !important;
     background-color: transparent !important;
+}
+
+.styles-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 9px;
+}
+
+.styles-item-delete:hover {
+    cursor: pointer;
+}
+
+.styles-item:hover {
+    background-color: #0000001c;
+}
+
+#styles-container {
+    margin-bottom: 5px;
+    min-height: 60px;
 }
 
 input:focus,
@@ -43,7 +63,7 @@ button:hover {
 }
 
 #inputOutput {
-    min-height: 10rem;
+    min-height: 14rem;
 }
 
 .unselectable {
@@ -126,4 +146,8 @@ button:hover {
 .alert {
     margin-bottom: 0;
     margin-top: 10px;
+}
+
+@media screen and (max-width:1200px) {
+    .splitrow { flex-wrap: wrap;  }
 }

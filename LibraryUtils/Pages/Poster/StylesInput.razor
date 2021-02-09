@@ -1,0 +1,67 @@
+<div class="form-group">
+    <label for="?" class="text-white">Styles</label>
+    <div id="styles-container" class="input-container">
+        @foreach (var style in Styles)
+        {
+            <div class="styles-item">
+                <span>@style</span>
+                <span class="styles-item-delete" @onclick=@(() => RemoveStyleFromList(style))><i class="fas fa-times"></i></span>
+                @* TODO: Implement Sorted List and implement reordering of styles *@
+            </div>
+        }
+    </div>
+    <div class="input-group">
+        <input type="text" @bind="newStyle" @bind:event="oninput" @onkeydown="HandleEnter" class="form-control bold">
+        <div class="input-group-append">
+            <button type="button" @onclick="AddStyleToList" class="btn btn-outline-secondary">Add</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string newStyle { get; set; } = string.Empty;
+    private List<string> _styles;
+
+    [Parameter]
+    public Action StyleChangedCallback { get; set; }
+
+    [Parameter]
+    public List<string> Styles
+    {
+        get => _styles;
+        set
+        {
+            if (_styles == value) return;
+            _styles = value;
+            StylesChanged.InvokeAsync(value);
+        }
+    }
+    [Parameter]
+    public EventCallback<List<string>> StylesChanged { get; set; }
+
+    public void HandleEnter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            AddStyleToList();
+        }
+    }
+
+    public void AddStyleToList()
+    {
+        if (!string.IsNullOrEmpty(newStyle) && !Styles.Contains(newStyle))
+        {
+            Styles.Add(newStyle);
+            StylesChanged.InvokeAsync(Styles);
+            StyleChangedCallback();
+        }
+        newStyle = string.Empty;
+    }
+
+    public void RemoveStyleFromList(string style)
+    {
+        Styles.Remove(style);
+        StylesChanged.InvokeAsync(Styles);
+        StyleChangedCallback();
+    }
+}

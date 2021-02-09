@@ -14,11 +14,14 @@
                 <div class="form-group no-bottom-margin">
                     <div class="input-group">
                         <div class="input-group-prepend">
-                            <span class="input-group-text text-white no-right-border unselectable">MusicBrainz URL</span>
+                            <span class="input-group-text text-white no-right-border unselectable">MusicBrainz
+                                URL</span>
                         </div>
-                        <input type="url" name="url" class="form-control no-right-border" value=@MusicBrainzUrl autocomplete="off">
+                        <input type="url" name="url" class="form-control no-right-border" value=@MusicBrainzUrl
+                            autocomplete="off">
                         <div class="input-group-append">
-                            <button type="button" name="Clear" class="btn btn-outline-secondary">Clear</button>
+                            <button type="button" name="Clear" class="btn btn-outline-secondary"
+                                @onclick="ClearInputs">Clear</button>
                         </div>
                     </div>
                 </div>
@@ -29,78 +32,48 @@
     <div class="splitrow">
         <div class="splitcolumn">
             <form>
-                <div class="form-group">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text no-right-border"><i class="fa fa-user"></i></span>
-                            <span class="input-group-text text-white no-right-border unselectable">Artist</span>
-                        </div>
-                        <input type="text" name="artist" class="form-control" placeholder="Enter artist name" id="inputArtist" aria-describedby="artistHelp">
-                    </div>
-                    <small id="artistHelp" class="form-text text-white">Artist name should be written using latin or cyrilic script followed by the original script in parentheses.</small>
-                </div>
+                <TextInput Label="Artist" IconName="fa-user" @bind-Value="Artist"
+                    Description="Artist name should be written using latin or cyrilic script followed by the original script in parentheses." />
 
-                <div class="form-group">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text no-right-border"><i class="fas fa-compact-disc"></i></span>
-                            <span class="input-group-text text-white no-right-border unselectable">Album</span>
-                        </div>
-                        <input type="text" name="album" class="form-control" placeholder="Enter album name" id="inputAlbum" aria-describedby="albumHelp">
-                    </div>
-                    <small id="albumHelp" class="form-text text-white">Album guidelines.</small>
-                </div>
+                <TextInput Label="Album" IconName="fa-compact-disc" @bind-Value="Title"
+                    Description="Album guidelines." />
 
-                <div class="form-group">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text no-right-border"><i class="far fa-building"></i></span>
-                            <span class="input-group-text text-white no-right-border unselectable">Label</span>
-                        </div>
-                        <input type="text" name="label" class="form-control" placeholder="Enter label information" id="inputLabel">
+                <div class="form-row align-items-center">
+                    <div class="col">
+                        <TextInput Label="Label" IconName="fa-building" @bind-Value="Label" />
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text no-right-border"><i class="fas fa-hashtag"></i></span>
-                            <span class="input-group-text text-white no-right-border unselectable">Catalogue Number</span>
-                        </div>
-                        <input type="text" name="catNo" class="form-control" placeholder="Enter Catalogue number" id="inputCatNo">
+                    <div class="col">
+                        <TextInput Label="Catalogue Number" IconName="fa-hashtag" @bind-Value=CatalogueNumber />
                     </div>
                 </div>
 
                 <div class="form-row align-items-center">
                     <div class="col-8">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text no-right-border"><i class="fas fa-globe-americas"></i></span>
-                                    <span class="input-group-text text-white no-right-border unselectable">Artist Country</span>
-                                </div>
-                                <input type="text" name="artistCountry" class="form-control" placeholder="Enter Artist country" id="inputArtistCountry" aria-describedby="artistCountryHelp">
-                            </div>
-                            <small id="artistCountryHelp" class="form-text text-white">Artist country information.</small>
-                        </div>    
+                        <TextInput Label="Artist Country" IconName="fa-globe-americas" @bind-Value="ArtistCountry"
+                            Description="Artist country information." />
                     </div>
+
                     <div class="col">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text no-right-border"><i class="fas fa-calendar-day"></i></span>
-                                    <span class="input-group-text text-white no-right-border unselectable">Year</span>
-                                </div>
-                                <input type="text" name="year" class="form-control" placeholder="Enter Year" id="inputYear" aria-describedby="yearHelp">
-                            </div>
-                            <small id="yearHelp" class="form-text text-white">The year the release was first published.</small>
-                        </div>
+                        <TextInput Label="Year" IconName="fa-calendar-day" @bind-Value="Year"
+                            Description="The year the release was first published." />
                     </div>
                 </div>
 
                 <div class="form-group">
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Dropdown button
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </div>
                     <label for="inputReleaseType" class="text-white">Type</label>
-                        <select name="releaseType" id="inputReleaseType">
+                    <select name="releaseType" id="inputReleaseType">
                         <option value="album">Album</option>
                         <option value="ep">EP</option>
                         <option value="single">Single</option>
@@ -109,7 +82,7 @@
                         <input type="checkbox" name="Soundtrack" class="form-check-input" id="inputSoundtrack">
                         <label class="form-check-label">Soundtrack</label>
                     </div>
-                    <div class="form-check form-check-inline">                              
+                    <div class="form-check form-check-inline">
                         <input type="checkbox" name="OST" class="form-check-input" id="inputOST">
                         <label class="form-check-label" for="inputOST">OST</label>
                     </div>
@@ -118,10 +91,7 @@
                         <label class="form-check-label" for="inputScore">Score</label>
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label for="?" class="text-white">Styles</label>
-                </div>
+                <StylesInput Styles=@Styles StyleChangedCallback=@StyleChangedCallback />
             </form>
         </div>
 
@@ -133,42 +103,165 @@
                             <span class="input-group-text no-right-border"><i class="fas fa-align-left"></i></span>
                             <span class="input-group-text text-white no-right-border unselectable">Output</span>
                         </div>
-                        <textarea name="output" cols="50" class="form-control no-right-border" placeholder="Press 'Generate' button to make a description" id="inputOutput"></textarea>
-                        <button type="button" name="generate" class="btn btn-outline-secondary">Generate</button>
+                        <textarea cols="50" class="form-control no-right-border"
+                            placeholder="Press 'Generate' button to make a description" id="inputOutput"
+                            @bind="AlbumDescriptionText"></textarea>
+                        <button type="button" name="generate" class="btn btn-outline-secondary"
+                            @onclick="GenerateDescription">Generate</button>
                     </div>
+                </div>
+
+                <TextInput Label="Album Headline" @bind-Value=@AlbumHeadline />
+                <TextInput Label="Album Bottomline" IconName="fa-paragraph" @bind-Value=@AlbumBottomline />
+                <div class="form-group">
+                    @{
+                        int count = AlbumDescriptionText.Count(x => x == '#');
+                        string tagCountClassName = count > 10 ? "text-danger" : "text-white"; 
+                    }
+                    <label class=@tagCountClassName>Found @count tags in the description</label>
                 </div>
 
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-prepend">
-                            <span class="input-group-text no-right-border"><i class="fas fa-paragraph"></i></span>
-                            <span class="input-group-text text-white no-right-border unselectable">Album Description</span>
+                            <span class="input-group-text text-white no-right-border unselectable">Extra Tags</span>
                         </div>
-                        <input type="text" name="albumdescription" class="form-control">
+                        <textarea cols="10" class="form-control no-right-border" @bind="ExtraTags"></textarea>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="text-white">Found # tags in the description</label>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-@code{
+@code {
     private void FileUploadedCallback(FlacFile file)
     {
-        if (!string.IsNullOrEmpty(file.VorbisComment?.Artist?.Value))
+        string musicbrainzReleaseId = file.VorbisComment["MUSICBRAINZ_ALBUMID"].ToString();
+        if (!string.IsNullOrEmpty(musicbrainzReleaseId))
         {
-            MusicBrainzUrl = file.VorbisComment.Artist.Value;
+            ClearInputs();
+            MusicBrainzUrl = "https://musicbrainz.org/release/" + musicbrainzReleaseId;
+            ProcessRelease(musicbrainzReleaseId);
         }
         else
         {
-
+            MusicBrainzUrl = "[NOT FOUND]";
         }
         StateHasChanged();
     }
 
-    private string MusicBrainzUrl { get; set; }
+    private void StyleChangedCallback() {
+        releaseHelper.UpdateStyleTags(Styles);
+    }
+
+    private void ProcessRelease(string url)
+    {
+        release = Release.Load(url, true);
+        releaseHelper = new ReleaseHelper(release);
+        MusicBrainzReleaseToLocalFields(release);
+    }
+
+    private void MusicBrainzReleaseToLocalFields(Release release)
+    {
+        Artist = releaseHelper.GetArtist();
+        Title = releaseHelper.GetTitle();
+        Label = releaseHelper.GetLabel();
+        CatalogueNumber = releaseHelper.GetCatalogueNumber();
+        ArtistCountry = releaseHelper.GetArtistCountry();
+        Year = releaseHelper.GetYear();
+        Styles = releaseHelper.GetStyles();
+
+        AlbumHeadline = releaseHelper.GenerateAlbumHeadline(Artist, Title);
+        AlbumBottomline = releaseHelper.GenerateAlbumBottomline(ArtistCountry, Year);
+
+        StateHasChanged();
+    }
+
+    private void GenerateDescription()
+    {
+        if (string.IsNullOrEmpty(MusicBrainzUrl))
+        {
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        string headerStyleTags = releaseHelper.GenerateHeaderStyleTags();
+        sb.AppendLine(string.Join(ReleaseHelper.TagSeparator, headerStyleTags));
+        sb.AppendLine(ReleaseHelper.TextblockSeparator);
+        sb.AppendLine($"Artist: {Artist}");
+        sb.AppendLine($"Title: {Title}");
+
+        sb.AppendLine($"Type: {releaseHelper.GenerateReleaseType()}");
+
+        if (!string.IsNullOrEmpty(ArtistCountry))
+            sb.AppendLine($"Country: {ArtistCountry}");
+
+        if (!string.IsNullOrEmpty(Year))
+            sb.AppendLine($"Year: {Year}");
+
+        if (!string.IsNullOrEmpty(Label))
+        {
+            sb.Append($"Label: {Label}");
+            if (!string.IsNullOrEmpty(CatalogueNumber) && !CatalogueNumber.Equals("none"))
+            {
+                sb.AppendLine($" — {CatalogueNumber}");
+            }
+            else
+            {
+                sb.Append(Environment.NewLine);
+            }
+        }
+
+        if (Styles.Any())
+        {
+            sb.AppendLine($"Styles: " + string.Join(", ", Styles));
+        }
+
+        sb.AppendLine($"Total Duration: {releaseHelper.CalculateDuration(release)}");
+        sb.AppendLine(ReleaseHelper.TextblockSeparator);
+        string footerStyleTags = releaseHelper.GenerateFooterStyleTags();
+        if (!string.IsNullOrEmpty(footerStyleTags))
+        {
+            sb.AppendLine(footerStyleTags);
+        }
+        sb.AppendLine($"MBID: {release.Id}");
+
+        ExtraTags = releaseHelper.GenerateExtraTags();
+
+        AlbumDescriptionText = sb.ToString();
+    }
+
+    private Release release { get; set; }
+    private string Artist { get; set; } = string.Empty;
+    private string Title { get; set; } = string.Empty;
+    private string Label { get; set; } = string.Empty;
+    private string CatalogueNumber { get; set; } = string.Empty;
+    private string ArtistCountry { get; set; } = string.Empty;
+    private string Year { get; set; } = string.Empty;
+    private string AlbumHeadline { get; set; } = string.Empty;
+    private string AlbumBottomline { get; set; } = string.Empty;
+    private string AlbumDescriptionText { get; set; } = string.Empty;
+    private string ExtraTags { get; set; } = string.Empty;
+    private List<string> Styles { get; set; } = new List<string>();
+    private ReleaseHelper releaseHelper;
+
+    private string MusicBrainzUrl { get; set; } = string.Empty;
+
+    private void ClearInputs()
+    {
+        release = null;
+        MusicBrainzUrl = string.Empty;
+        Artist = string.Empty;
+        Title = string.Empty;
+        Label = string.Empty;
+        CatalogueNumber = string.Empty;
+        ArtistCountry = string.Empty;
+        Year = string.Empty;
+        AlbumHeadline = string.Empty;
+        AlbumBottomline = string.Empty;
+        AlbumDescriptionText = string.Empty;
+        ExtraTags = string.Empty;
+        Styles.Clear();
+        releaseHelper = null;
+    }
 }

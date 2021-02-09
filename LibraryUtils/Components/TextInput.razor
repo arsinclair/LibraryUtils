@@ -1,0 +1,46 @@
+<div class="form-group">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            @{
+                if (!string.IsNullOrEmpty(IconName))
+                {
+                    <span class="input-group-text no-right-border"><i class="fas @IconName"></i></span>
+                }
+            }
+            <span class="input-group-text text-white no-right-border unselectable">@Label</span>
+        </div>
+        <input type="text" @bind-value="Value" class="form-control bold" placeholder="@Hint">
+    </div>
+    @{
+        if (!string.IsNullOrEmpty(Description))
+        {
+            <small class="form-text text-white">@Description</small>
+        }
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string Label { get; set; }
+    [Parameter]
+    public string Hint { get; set; }
+    [Parameter]
+    public string IconName { get; set; }
+    [Parameter]
+    public string Description { get; set; }
+
+    private string _value;
+    [Parameter]
+    public string Value
+    {
+        get => _value;
+        set
+        {
+            if (_value == value) return;
+            _value = value;
+            ValueChanged.InvokeAsync(value);
+        }
+    }
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+}

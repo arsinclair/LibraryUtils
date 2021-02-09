@@ -1,20 +1,26 @@
 @using FlacLibSharp
-@using BlazorInputFile
 @using System.IO
+@using System.Threading
 
 <div class="splitrow">
     <div class="col-12 p-0">
         <div class="splitcolumn">
             <form>
                 <div class="dropzone @dropClass unselectable" style="text-align: center;">
-                    <BlazorInputFile.InputFile multiple title="" OnChange="HandleInput" @ondragenter="HandleDragEnter" @ondragleave="HandleDragLeave" />
+                    <InputFile multiple OnChange="HandleInput" @ondragenter="HandleDragEnter"
+                        @ondragleave="HandleDragLeave" />
                     <p class="dropzone-text">Upload<br></p>
-                    <p class="dropzone-text" style="font-size: small;">FLAC / mp3 files, folders, musicbrainz URL</p>
+                    <p class="dropzone-text" style="font-size: small;">FLAC <strike>/ mp3 files, folders, musicbrainz
+                            URL</strike></p>
                 </div>
-                @if (isUploading) {
-                    <div class="alert alert-info" role="alert">Uploading...<Spinner /></div>
+                @if (isUploading)
+                {
+                    <div class="alert alert-info" role="alert">Uploading: @progressPercent
+                        <Spinner />
+                    </div>
                 }
-                @if (!string.IsNullOrEmpty(message)) {
+                @if (!string.IsNullOrEmpty(message))
+                {
                     <div class="alert alert-danger" role="alert">
                         @message
                     </div>
@@ -33,6 +39,13 @@
     private string message = "";
     private string dropClass = "";
     private bool isUploading = false;
+    private int progressPercent;
+    private CancellationTokenSource cancelation;
+
+    protected override void OnInitialized()
+    {
+        cancelation = new CancellationTokenSource();
+    }
 
     private void HandleDragEnter()
     {
@@ -44,16 +57,29 @@
         dropClass = "";
     }
 
-    async Task HandleInput(IFileListEntry[] files)
+    private async Task HandleInput(InputFileChangeEventArgs eventArgs)
     {
         dropClass = "";
+        var files = eventArgs.GetMultipleFiles(1);
         var inputFile = files.FirstOrDefault();
         if (inputFile != null)
         {
             using (var ms = new MemoryStream())
             {
                 isUploading = true;
-                await inputFile.Data.CopyToAsync(ms);
+                Stream stream = inputFile.OpenReadStream(70 * 1024 * 1024, cancelation.Token); // 70MB : TODO: Copying to memory is bad, we need to copy to blog or external store
+                var buffer = new byte[4 * 4096];
+                int bytesRead;
+                double totalRead = 0;
+
+                while ((bytesRead = await stream.ReadAsync(buffer, cancelation.Token)) != 0)
+                {
+                    totalRead += bytesRead;
+                    await ms.WriteAsync(buffer, cancelation.Token);
+                    progressPercent = (int)((totalRead / inputFile.Size) * 100); // TODO: use this approach for progress tracking https://stackoverflow.com/a/62805273/6184866
+                    InvokeAsync(StateHasChanged);
+                }
+
                 ms.Position = 0;
 
                 try
@@ -73,5 +99,10 @@
                 isUploading = false;
             }
         }
+    }
+
+    public void Dispose()
+    {
+        cancelation.Cancel();
     }
 }
