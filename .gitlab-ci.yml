@@ -1,0 +1,15 @@
+mirror:
+    tags: ["linux-docker-build"]
+    image: alpine:3.13.1
+    before_script:
+        - apk update && apk add -q --no-cache bash git openssh
+        - git config --global user.name "${GITLAB_USER_NAME}"
+        - git config --global user.email "${GITLAB_USER_EMAIL}"
+    script:
+        - mkdir ~/.ssh
+        - printf "%s\n" "${GITHUB_DEPLOY_KEY}" > ~/.ssh/id_rsa
+        - chmod 600 ~/.ssh/id_rsa
+        - ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+        - git clone --bare ${CI_REPOSITORY_URL}
+        - cd ${CI_PROJECT_NAME}.git
+        - git push --mirror git@github.com:${GITHUB_REPO}.git
