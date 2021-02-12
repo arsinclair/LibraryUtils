@@ -16,5 +16,9 @@ mirror:
 publish:
     tags: ["windows-powershell-deploy"]
     script:
-        - pwd
-        - ls
+        - dotnet publish --configuration Release --nologo --output ./PublishOutput
+        - $publishedPath = (pwd).Path + "\PublishOutput"
+        - C:\Windows\System32\inetsrv\appcmd.exe delete app "JRM Library/LibraryUtils"
+        - cd "${DEPLOY_PATH}"
+        - if((pwd).Path -eq "${DEPLOY_PATH}") { Remove-Item ./* -Recurse -Force } else { Throw "INCORRECT FILE PATH" + (pwd).Path }
+        - Copy-Item -Path "$publishedPath\*" -Destination "${DEPLOY_PATH}" -Recurse
