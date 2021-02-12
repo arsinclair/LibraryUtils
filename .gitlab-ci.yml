@@ -13,3 +13,8 @@ mirror:
         - git clone --bare ${CI_REPOSITORY_URL}
         - cd ${CI_PROJECT_NAME}.git
         - git push --mirror git@github.com:${GITHUB_REPO}.git
+publish:
+    tags: ["windows-powershell-deploy"]
+    script:
+        - pwd
+        - ls
