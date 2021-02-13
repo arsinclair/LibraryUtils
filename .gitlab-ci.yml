@@ -23,6 +23,8 @@ mirror:
 build:
     stage: build
     tags: ["windows-powershell-deploy"]
+    rules:
+        - if: '$CI_COMMIT_BRANCH == "master"'
     script:
         - dotnet publish --configuration Release --nologo --output ./PublishOutput
 
