@@ -23,8 +23,8 @@ mirror:
 build:
     stage: build
     tags: ["windows-powershell-deploy"]
-    rules:
-        - if: '$CI_COMMIT_BRANCH == "master"'
+    #rules:
+    #    - if: '$CI_COMMIT_BRANCH == "master"'
     script:
         - dotnet publish --configuration Release --nologo --output ./PublishOutput
         - Compress-Archive -Path "PublishOutput\*" -DestinationPath Output.zip -CompressionLevel Optimal
@@ -36,8 +36,8 @@ build:
 deploy:
     stage: deploy
     tags: ["windows-powershell-deploy"]
-    rules:
-        - if: '$CI_COMMIT_BRANCH == "master"'
+    #rules:
+    #    - if: '$CI_COMMIT_BRANCH == "master"'
     before_script:
         # Cleanup
         - $existingApp = Get-WebApplication -Site "${IIS_PARENT_SITE}" -Name "${CI_PROJECT_TITLE}"
@@ -46,6 +46,8 @@ deploy:
         - if($existingPool) { Remove-WebAppPool "${CI_PROJECT_TITLE}" }
         - Reset-IISServerManager -Confirm:$false
         - if (!(Test-Path -Path "${DEPLOY_PATH}")) { Throw "INCORRECT FILE PATH" }
+        - $lockedFile="${DEPLOY_PATH}\LibraryUtils.dll"
+        - Get-Process | foreach{$processVar = $_;$_.Modules | foreach{if($_.FileName -eq $lockedFile){$processVar.Name + " PID:" + $processVar.id}}}
         - Get-ChildItem "${DEPLOY_PATH}" | Remove-Item -Recurse -Confirm:$false -Force
     script:
         - Expand-Archive "Output.zip" -DestinationPath "${DEPLOY_PATH}"
