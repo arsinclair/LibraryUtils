@@ -1,4 +1,10 @@
+stages:
+    - mirror
+    - build
+    - deploy
+
 mirror:
+    stage: mirror
     tags: ["linux-docker-build"]
     image: alpine:3.13.1
     before_script:
@@ -13,3 +19,37 @@ mirror:
         - git clone --bare ${CI_REPOSITORY_URL}
         - cd ${CI_PROJECT_NAME}.git
         - git push --mirror git@github.com:${GITHUB_REPO}.git
+
+build:
+    stage: build
+    tags: ["windows-powershell-deploy"]
+    rules:
+        - if: '$CI_COMMIT_BRANCH == "master"'
+    script:
+        - dotnet publish --configuration Release --nologo --output ./PublishOutput
+
+clean-old:
+    stage: deploy
+    tags: ["windows-powershell-deploy"]
+    rules:
+        - if: '$CI_COMMIT_BRANCH == "master"'
+    script:
+        - import-module WebAdministration
+        - Reset-IISServerManager -Confirm:$false
+        - $existingApp = Get-WebApplication -Site "${IIS_PARENT_SITE}" -Name "${CI_PROJECT_TITLE}"
+        - if($existingApp) { Remove-WebApplication -Site "${IIS_PARENT_SITE}" -Name "${CI_PROJECT_TITLE}" }
+        - $existingPool = Get-IISAppPool "${CI_PROJECT_TITLE}"
+        - if($existingPool) { Remove-WebAppPool "${CI_PROJECT_TITLE}" }
+        - if (Test-Path -Path "${DEPLOY_PATH}") { Remove-Item "${DEPLOY_PATH}\*" -Recurse -Force } else { Throw "INCORRECT FILE PATH " }
+        - Reset-IISServerManager -Confirm:$false
+deploy:
+    stage: deploy
+    tags: ["windows-powershell-deploy"]
+    rules:
+        - if: '$CI_COMMIT_BRANCH == "master"'
+    script:
+        - Copy-Item -Path "PublishOutput\*" -Destination "${DEPLOY_PATH}" -Recurse
+        - import-module WebAdministration
+        - $newPool = New-WebAppPool -Name "${CI_PROJECT_TITLE}" -Force
+        - $newApp = New-WebApplication -Name "${CI_PROJECT_TITLE}" -Site "${IIS_PARENT_SITE}" -PhysicalPath "${DEPLOY_PATH}" -ApplicationPool $newPool.Name -Force
+        - Reset-IISServerManager -Confirm:$false
