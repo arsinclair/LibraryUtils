@@ -1,6 +1,7 @@
 stages:
     - mirror
     - build
+    - cleanup
     - deploy
 
 mirror:
@@ -27,9 +28,14 @@ build:
         - if: '$CI_COMMIT_BRANCH == "master"'
     script:
         - dotnet publish --configuration Release --nologo --output ./PublishOutput
+        - Compress-Archive -Path "PublishOutput\*" -DestinationPath Output.zip -CompressionLevel Optimal
+    artifacts:
+        paths:
+            - Output.zip
+        expire_in: 180 minutes
 
-clean-old:
-    stage: deploy
+cleanup:
+    stage: cleanup
     tags: ["windows-powershell-deploy"]
     rules:
         - if: '$CI_COMMIT_BRANCH == "master"'
@@ -42,6 +48,7 @@ clean-old:
         - if($existingPool) { Remove-WebAppPool "${CI_PROJECT_TITLE}" }
         - if (Test-Path -Path "${DEPLOY_PATH}") { Remove-Item "${DEPLOY_PATH}\*" -Recurse -Force } else { Throw "INCORRECT FILE PATH " }
         - Reset-IISServerManager -Confirm:$false
+
 deploy:
     stage: deploy
     tags: ["windows-powershell-deploy"]
