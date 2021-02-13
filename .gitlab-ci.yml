@@ -32,7 +32,7 @@ build:
     artifacts:
         paths:
             - Output.zip
-        expire_in: 180 minutes
+        expire_in: 20 minutes
 
 cleanup:
     stage: cleanup
@@ -40,7 +40,6 @@ cleanup:
     rules:
         - if: '$CI_COMMIT_BRANCH == "master"'
     script:
-        - import-module WebAdministration
         - Reset-IISServerManager -Confirm:$false
         - $existingApp = Get-WebApplication -Site "${IIS_PARENT_SITE}" -Name "${CI_PROJECT_TITLE}"
         - if($existingApp) { Remove-WebApplication -Site "${IIS_PARENT_SITE}" -Name "${CI_PROJECT_TITLE}" }
@@ -55,8 +54,7 @@ deploy:
     rules:
         - if: '$CI_COMMIT_BRANCH == "master"'
     script:
-        - Copy-Item -Path "PublishOutput\*" -Destination "${DEPLOY_PATH}" -Recurse
-        - import-module WebAdministration
+        - Expand-Archive "Output.zip" -DestinationPath "${DEPLOY_PATH}"
         - $newPool = New-WebAppPool -Name "${CI_PROJECT_TITLE}" -Force
         - $newApp = New-WebApplication -Name "${CI_PROJECT_TITLE}" -Site "${IIS_PARENT_SITE}" -PhysicalPath "${DEPLOY_PATH}" -ApplicationPool $newPool.Name -Force
         - Reset-IISServerManager -Confirm:$false
