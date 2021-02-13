@@ -37,16 +37,16 @@ build:
 cleanup:
     stage: cleanup
     tags: ["windows-powershell-deploy"]
+    dependencies: [] # Disable downloading artifacts for this job
     rules:
         - if: '$CI_COMMIT_BRANCH == "master"'
     script:
-        - Reset-IISServerManager -Confirm:$false
         - $existingApp = Get-WebApplication -Site "${IIS_PARENT_SITE}" -Name "${CI_PROJECT_TITLE}"
         - if($existingApp) { Remove-WebApplication -Site "${IIS_PARENT_SITE}" -Name "${CI_PROJECT_TITLE}" }
         - $existingPool = Get-IISAppPool "${CI_PROJECT_TITLE}"
         - if($existingPool) { Remove-WebAppPool "${CI_PROJECT_TITLE}" }
-        - if (Test-Path -Path "${DEPLOY_PATH}") { Remove-Item "${DEPLOY_PATH}\*" -Recurse -Force } else { Throw "INCORRECT FILE PATH " }
         - Reset-IISServerManager -Confirm:$false
+        - if (Test-Path -Path "${DEPLOY_PATH}") { Remove-Item "${DEPLOY_PATH}\*" -Recurse -Force } else { Throw "INCORRECT FILE PATH " }
 
 deploy:
     stage: deploy
