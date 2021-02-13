@@ -47,7 +47,7 @@ deploy:
         - Reset-IISServerManager -Confirm:$false
         - if (!(Test-Path -Path "${DEPLOY_PATH}")) { Throw "INCORRECT FILE PATH" }
         - $lockedFile="${DEPLOY_PATH}\LibraryUtils.dll"
-        - Get-Process | foreach{$processVar = $_;$_.Modules | foreach{if($_.FileName -eq $lockedFile){$processVar.Name + " PID:" + $processVar.id}}}
+        - Start-Sleep -Seconds 2
         - Get-ChildItem "${DEPLOY_PATH}" | Remove-Item -Recurse -Confirm:$false -Force
     script:
         - Expand-Archive "Output.zip" -DestinationPath "${DEPLOY_PATH}"
