@@ -23,8 +23,8 @@ mirror:
 build:
     stage: build
     tags: ["windows-powershell-deploy"]
-    #rules:
-    #    - if: '$CI_COMMIT_BRANCH == "master"'
+    rules:
+       - if: '$CI_COMMIT_BRANCH == "master"'
     script:
         - dotnet publish --configuration Release --nologo --output ./PublishOutput
         - Compress-Archive -Path "PublishOutput\*" -DestinationPath Output.zip -CompressionLevel Optimal
@@ -36,8 +36,8 @@ build:
 deploy:
     stage: deploy
     tags: ["windows-powershell-deploy"]
-    #rules:
-    #    - if: '$CI_COMMIT_BRANCH == "master"'
+    rules:
+       - if: '$CI_COMMIT_BRANCH == "master"'
     before_script:
         # Cleanup
         - $existingApp = Get-WebApplication -Site "${IIS_PARENT_SITE}" -Name "${CI_PROJECT_TITLE}"
