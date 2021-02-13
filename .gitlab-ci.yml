@@ -1,7 +1,6 @@
 stages:
     - mirror
     - build
-    - cleanup
     - deploy
 
 mirror:
@@ -34,25 +33,19 @@ build:
             - Output.zip
         expire_in: 20 minutes
 
-cleanup:
-    stage: cleanup
-    tags: ["windows-powershell-deploy"]
-    dependencies: [] # Disable downloading artifacts for this job
-    rules:
-        - if: '$CI_COMMIT_BRANCH == "master"'
-    script:
-        - $existingApp = Get-WebApplication -Site "${IIS_PARENT_SITE}" -Name "${CI_PROJECT_TITLE}"
-        - if($existingApp) { Remove-WebApplication -Site "${IIS_PARENT_SITE}" -Name "${CI_PROJECT_TITLE}" }
-        - $existingPool = Get-IISAppPool "${CI_PROJECT_TITLE}"
-        - if($existingPool) { Remove-WebAppPool "${CI_PROJECT_TITLE}" }
-        - Reset-IISServerManager -Confirm:$false
-        - if (Test-Path -Path "${DEPLOY_PATH}") { Remove-Item "${DEPLOY_PATH}\*" -Recurse -Force } else { Throw "INCORRECT FILE PATH " }
-
 deploy:
     stage: deploy
     tags: ["windows-powershell-deploy"]
     rules:
         - if: '$CI_COMMIT_BRANCH == "master"'
+    before_script:
+        # Cleanup
+        - $existingApp = Get-WebApplication -Site "${IIS_PARENT_SITE}" -Name "${CI_PROJECT_TITLE}"
+        - if($existingApp) { Remove-WebApplication -Site "${IIS_PARENT_SITE}" -Name "${CI_PROJECT_TITLE}" }
+        - $existingPool = Get-IISAppPool "${CI_PROJECT_TITLE}"
+        - if($existingPool) { Remove-WebAppPool "${CI_PROJECT_TITLE}" }
+        - Reset-IISServerManager -Confirm:$false
+        - if (Test-Path -Path "${DEPLOY_PATH}") { Remove-Item "${DEPLOY_PATH}\*" -Recurse } else { Throw "INCORRECT FILE PATH " }
     script:
         - Expand-Archive "Output.zip" -DestinationPath "${DEPLOY_PATH}"
         - $newPool = New-WebAppPool -Name "${CI_PROJECT_TITLE}" -Force
