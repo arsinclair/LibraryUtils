@@ -45,7 +45,8 @@ deploy:
         - $existingPool = Get-IISAppPool "${CI_PROJECT_TITLE}"
         - if($existingPool) { Remove-WebAppPool "${CI_PROJECT_TITLE}" }
         - Reset-IISServerManager -Confirm:$false
-        - if (Test-Path -Path "${DEPLOY_PATH}") { Remove-Item "${DEPLOY_PATH}\*" -Recurse } else { Throw "INCORRECT FILE PATH " }
+        - if (!(Test-Path -Path "${DEPLOY_PATH}")) { Throw "INCORRECT FILE PATH" }
+        - Get-ChildItem "${DEPLOY_PATH}\*" -Recurse | Remove-Item
     script:
         - Expand-Archive "Output.zip" -DestinationPath "${DEPLOY_PATH}"
         - $newPool = New-WebAppPool -Name "${CI_PROJECT_TITLE}" -Force
