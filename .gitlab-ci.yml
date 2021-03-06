@@ -27,7 +27,7 @@ prepare:
     rules:
        - if: '$CI_COMMIT_BRANCH == "master"'
     script:
-        - .\CI Scripts\dotnet-setup.ps1
+        - ".\CI Scripts\dotnet-setup.ps1"
 
 build:
     stage: build
