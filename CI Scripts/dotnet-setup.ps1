@@ -1,9 +1,3 @@
-# SDK includes Runtime and Hosting Bundle; SDK is required to build and publish the app, otherwise can use Hosting Bundle
-# https://dotnetcli.azureedge.net/dotnet/Sdk/5.0.200/dotnet-sdk-5.0.200-win-x64.exe
-# https://dotnetcli.azureedge.net/dotnet/aspnetcore/Runtime/5.0.3/aspnetcore-runtime-5.0.3-win-x64.exe
-
-# https://download.visualstudio.microsoft.com/download/pr/dff39ddb-b399-43c5-9af0-04875134ce04/1c449bb9ad4cf75ec616482854751069/dotnet-hosting-5.0.3-win.exe
-
 function InstallSDK {
     wget "https://dotnetcli.azureedge.net/dotnet/Sdk/5.0.200/dotnet-sdk-5.0.200-win-x64.exe" -outfile "dotnet-setup.exe";
     $pathvargs = { .\dotnet-setup.exe /install /quiet /norestart };
@@ -30,8 +24,11 @@ if (!$dotnetExists) {
     Restart-Computer
 }
 
-$runtimes = dotnet --list-runtimes
-$sdks = dotnet --list-sdks
+[string]$pathToDotnetX64 = "C:\Program Files (x86)\dotnet\dotnet.exe";
+[string]$pathToDotnetX86 = "C:\Program Files\dotnet\dotnet.exe";
+[Array]$arguments = "--list-runtimes";
+$runtimes = & $pathToDotnetX86 $arguments;
+$sdks = & $pathToDotnetX64 $arguments;
 
 if (($runtimes -like "Microsoft.AspNetCore.App 5.0.3*").Count -eq 0 -or ($runtimes -like "Microsoft.NETCore.App 5.0.3*").Count -eq 0) {
     InstallRuntime
