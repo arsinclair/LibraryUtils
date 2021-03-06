@@ -27,7 +27,7 @@ prepare:
     rules:
        - if: '$CI_COMMIT_BRANCH == "master"'
     script:
-        if ((dotnet --version) -like '5.0*') return
+        if ((dotnet --version) -like '5.0*') { return }
         wget "https://dot.net/v1/dotnet-install.ps1" -outfile "dotnet-install.ps1"
         .\dotnet-install.ps1 -Channel 5.0 -Runtime aspnetcore
 
