@@ -29,7 +29,7 @@ prepare:
     script:
         - $dotnetExists = $false
         - $targetVersionExists = $false
-        - try { if(Get-Command dotnet) { $dotnetExists = $true } }
+        - try { if(Get-Command dotnet) { $dotnetExists = $true } } catch [System.Management.Automation.CommandNotFoundException] {}
         - if ($dotnetExists) { if((((dir (Get-Command dotnet).Path.Replace('dotnet.exe', 'shared\Microsoft.NETCore.App')).Name) -like '5.0*').Count -ne 0) { $targetVersionExists = $true } }
         - if (!$targetVersionExists) { wget "https://dot.net/v1/dotnet-install.ps1" -outfile "dotnet-install.ps1";
             .\dotnet-install.ps1 -Channel 5.0 -Runtime aspnetcore }
