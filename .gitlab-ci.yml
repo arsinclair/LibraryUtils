@@ -27,9 +27,13 @@ prepare:
     rules:
        - if: '$CI_COMMIT_BRANCH == "master"'
     script:
-        if ((dotnet --version) -like '5.0*') { return }
-        wget "https://dot.net/v1/dotnet-install.ps1" -outfile "dotnet-install.ps1"
-        .\dotnet-install.ps1 -Channel 5.0 -Runtime aspnetcore
+        $dotnetExists = $false
+        $targetVersionExists = $false
+        try { if(Get-Command dotnet) { $dotnetExists = $true } }
+        if ($dotnetExists) { if((((dir (Get-Command dotnet).Path.Replace('dotnet.exe', 'shared\Microsoft.NETCore.App')).Name) -like '5.0*').Count -ne 0) { $targetVersionExists = $true } }
+
+        if (!$targetVersionExists) { wget "https://dot.net/v1/dotnet-install.ps1" -outfile "dotnet-install.ps1" }
+        if (!$targetVersionExists) { .\dotnet-install.ps1 -Channel 5.0 -Runtime aspnetcore }
 
 build:
     stage: build
