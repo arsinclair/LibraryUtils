@@ -27,13 +27,7 @@ prepare:
     rules:
        - if: '$CI_COMMIT_BRANCH == "master"'
     script:
-        - $dotnetExists = $false
-        - $targetVersionExists = $false
-        - try { if(Get-Command dotnet) { $dotnetExists = $true } } catch [System.Management.Automation.CommandNotFoundException] {}
-        - if ($dotnetExists) { if((((dir (Get-Command dotnet).Path.Replace('dotnet.exe', 'shared\Microsoft.NETCore.App')).Name) -like '5.0*').Count -ne 0) { $targetVersionExists = $true } }
-        - if (!$targetVersionExists) { wget "https://download.visualstudio.microsoft.com/download/pr/dff39ddb-b399-43c5-9af0-04875134ce04/1c449bb9ad4cf75ec616482854751069/dotnet-hosting-5.0.3-win.exe" -outfile "dotnet-setup.exe";
-            $pathvargs = { .\dotnet-setup.exe /install /quiet /norestart };
-            Invoke-Command -ScriptBlock $pathvargs }
+        - .\CI Scripts\dotnet-setup.ps1
 
 build:
     stage: build
