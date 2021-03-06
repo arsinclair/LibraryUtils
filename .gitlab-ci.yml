@@ -27,7 +27,7 @@ prepare:
     rules:
        - if: '$CI_COMMIT_BRANCH == "master"'
     script:
-        - ".\CI Scripts\dotnet-setup.ps1"
+        - powershell.exe -File ".\CI Scripts\dotnet-setup.ps1" -ExecutionPolicy Bypass
 
 build:
     stage: build
