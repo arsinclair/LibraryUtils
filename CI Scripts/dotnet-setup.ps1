@@ -37,6 +37,6 @@ if (($runtimes -like "Microsoft.AspNetCore.App 5.0.3*").Count -eq 0 -or ($runtim
     InstallRuntime
 }
 
-if (($sdks -like "5.0.200*").Count == 0) {
+if (($sdks -like "5.0.200*").Count -eq 0) {
     InstallSDK
 }
