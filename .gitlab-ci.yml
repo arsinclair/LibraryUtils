@@ -60,4 +60,4 @@ deploy:
         - Start-WebAppPool "${CI_PROJECT_TITLE}"
         - if (!$existingApp) { New-Website -Name "${CI_PROJECT_TITLE}" -PhysicalPath "${DEPLOY_PATH}" -ApplicationPool "${CI_PROJECT_TITLE}" -Force }
 
-        - Reset-IISServerManager -Confirm:$false
+        - Start-WebSite -Name "${CI_PROJECT_TITLE}"
