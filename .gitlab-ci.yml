@@ -50,7 +50,9 @@ deploy:
     before_script:
         # Cleanup
         - $existingPool = Get-IISAppPool "${CI_PROJECT_TITLE}"
-        - if($existingPool -and $existingPool.State -ne "Stopped") { Stop-WebAppPool "${CI_PROJECT_TITLE}" } else { New-WebAppPool -Name "${CI_PROJECT_TITLE}" -Force }
+        - if(!$existingPool) { New-WebAppPool -Name "${CI_PROJECT_TITLE}" -Force }
+        - $existingPool = Get-IISAppPool "${CI_PROJECT_TITLE}"
+        - if($existingPool.State -ne "Stopped") { Stop-WebAppPool "${CI_PROJECT_TITLE}" }
         - Start-Sleep -Seconds 2
         - if (!(Test-Path -Path "${DEPLOY_PATH}")) { New-Item -ItemType directory -Path "${DEPLOY_PATH}" }
         - Get-ChildItem "${DEPLOY_PATH}" | Remove-Item -Recurse -Confirm:$false -Force
