@@ -26,8 +26,8 @@ if (!$dotnetExists) {
     Restart-Computer
 }
 
-[string]$pathToDotnetX64 = "C:\Program Files (x86)\dotnet\dotnet.exe";
-[string]$pathToDotnetX86 = "C:\Program Files\dotnet\dotnet.exe";
+[string]$pathToDotnetX86 = "C:\Program Files (x86)\dotnet\dotnet.exe";
+[string]$pathToDotnetX64 = "C:\Program Files\dotnet\dotnet.exe";
 [Array]$arguments = "--list-runtimes";
 $runtimes = & $pathToDotnetX86 $arguments;
 $sdks = & $pathToDotnetX64 $arguments;
