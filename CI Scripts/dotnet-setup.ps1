@@ -28,9 +28,10 @@ if (!$dotnetExists) {
 
 [string]$pathToDotnetX86 = "C:\Program Files (x86)\dotnet\dotnet.exe";
 [string]$pathToDotnetX64 = "C:\Program Files\dotnet\dotnet.exe";
-[Array]$arguments = "--list-runtimes";
-$runtimes = & $pathToDotnetX86 $arguments;
-$sdks = & $pathToDotnetX64 $arguments;
+[Array]$argumentsRuntimes = "--list-runtimes";
+[Array]$argumentsSDKs = "--list-sdks";
+$runtimes = & $pathToDotnetX86 $argumentsRuntimes;
+$sdks = & $pathToDotnetX64 $argumentsSDKs;
 
 if (($runtimes -like "Microsoft.AspNetCore.App 5.0.3*").Count -eq 0 -or ($runtimes -like "Microsoft.NETCore.App 5.0.3*").Count -eq 0) {
     InstallRuntime
