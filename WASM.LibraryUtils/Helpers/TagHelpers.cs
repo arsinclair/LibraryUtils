@@ -1,6 +1,6 @@
 using System;
 
-namespace LibraryUtils
+namespace WASM.LibraryUtils
 {
     public static class TagHelpers
     {

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace LibraryUtils
+namespace WASM.LibraryUtils
 {
     public class Tag
     {

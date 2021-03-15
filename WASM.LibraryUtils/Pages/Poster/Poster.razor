@@ -1,0 +1,267 @@
+﻿@page "/poster"
+@using FlacLibSharp
+
+<link href="css/component-poster.css" rel="stylesheet" />
+
+<div id="main-component">
+    <h1>Album Age Poster</h1>
+
+    <DataInput FileUploadedCallback=@FileUploadedCallback></DataInput>
+
+    <div class="splitrow">
+        <div class="splitcolumn">
+            <form>
+                <div class="form-group no-bottom-margin">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text text-white no-right-border unselectable">MusicBrainz
+                                URL</span>
+                        </div>
+                        <input type="url" name="url" class="form-control no-right-border" value=@MusicBrainzUrl
+                            autocomplete="off">
+                        <div class="input-group-append">
+                            <button type="button" name="Clear" class="btn btn-outline-secondary"
+                                @onclick="ClearInputs">Clear</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="splitrow">
+        <div class="splitcolumn">
+            <form>
+                <TextInput Label="Artist" IconName="fa-user" @bind-Value="Artist"
+                    Description="Artist name should be written using latin or cyrilic script followed by the original script in parentheses." />
+
+                <TextInput Label="Album" IconName="fa-compact-disc" @bind-Value="Title"
+                    Description="Album guidelines." />
+
+                <div class="form-row align-items-center">
+                    <div class="col">
+                        <TextInput Label="Label" IconName="fa-building" @bind-Value="Label" />
+                    </div>
+
+                    <div class="col">
+                        <TextInput Label="Catalogue Number" IconName="fa-hashtag" @bind-Value=CatalogueNumber />
+                    </div>
+                </div>
+
+                <div class="form-row align-items-center">
+                    <div class="col-8">
+                        <TextInput Label="Artist Country" IconName="fa-globe-americas" @bind-Value="ArtistCountry"
+                            Description="Artist country information." />
+                    </div>
+
+                    <div class="col">
+                        <TextInput Label="Year" IconName="fa-calendar-day" @bind-Value="Year"
+                            Description="The year the release was first published." />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Dropdown button
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </div>
+                    <label for="inputReleaseType" class="text-white">Type</label>
+                    <select name="releaseType" id="inputReleaseType">
+                        <option value="album">Album</option>
+                        <option value="ep">EP</option>
+                        <option value="single">Single</option>
+                    </select>
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" name="Soundtrack" class="form-check-input" id="inputSoundtrack">
+                        <label class="form-check-label">Soundtrack</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" name="OST" class="form-check-input" id="inputOST">
+                        <label class="form-check-label" for="inputOST">OST</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" name="Score" id="inputScore" class="form-check-input">
+                        <label class="form-check-label" for="inputScore">Score</label>
+                    </div>
+                </div>
+                <StylesInput Styles=@Styles StyleChangedCallback=@StyleChangedCallback />
+            </form>
+        </div>
+
+        <div class="splitcolumn">
+            <form>
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text no-right-border"><i class="fas fa-align-left"></i></span>
+                            <span class="input-group-text text-white no-right-border unselectable">Output</span>
+                        </div>
+                        <textarea cols="50" class="form-control no-right-border"
+                            placeholder="Press 'Generate' button to make a description" id="inputOutput"
+                            @bind="AlbumDescriptionText"></textarea>
+                        <button type="button" name="generate" class="btn btn-outline-secondary"
+                            @onclick="GenerateDescription">Generate</button>
+                    </div>
+                </div>
+
+                <TextInput Label="Album Headline" @bind-Value=@AlbumHeadline />
+                <TextInput Label="Album Bottomline" IconName="fa-paragraph" @bind-Value=@AlbumBottomline />
+                <div class="form-group">
+                    @{
+                        int count = AlbumDescriptionText.Count(x => x == '#');
+                        string tagCountClassName = count > 10 ? "text-danger" : "text-white"; 
+                    }
+                    <label class=@tagCountClassName>Found @count tags in the description</label>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text text-white no-right-border unselectable">Extra Tags</span>
+                        </div>
+                        <textarea cols="10" class="form-control no-right-border" @bind="ExtraTags"></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@code {
+    private void FileUploadedCallback(FlacFile file)
+    {
+        string musicbrainzReleaseId = file.VorbisComment["MUSICBRAINZ_ALBUMID"].ToString();
+        if (!string.IsNullOrEmpty(musicbrainzReleaseId))
+        {
+            ClearInputs();
+            MusicBrainzUrl = "https://musicbrainz.org/release/" + musicbrainzReleaseId;
+            ProcessRelease(musicbrainzReleaseId);
+        }
+        else
+        {
+            MusicBrainzUrl = "[NOT FOUND]";
+        }
+        StateHasChanged();
+    }
+
+    private void StyleChangedCallback() {
+        releaseHelper.UpdateStyleTags(Styles);
+    }
+
+    private void ProcessRelease(string url)
+    {
+        release = Release.Load(url, true);
+        releaseHelper = new ReleaseHelper(release);
+        MusicBrainzReleaseToLocalFields(release);
+    }
+
+    private void MusicBrainzReleaseToLocalFields(Release release)
+    {
+        Artist = releaseHelper.GetArtist();
+        Title = releaseHelper.GetTitle();
+        Label = releaseHelper.GetLabel();
+        CatalogueNumber = releaseHelper.GetCatalogueNumber();
+        ArtistCountry = releaseHelper.GetArtistCountry();
+        Year = releaseHelper.GetYear();
+        Styles = releaseHelper.GetStyles();
+
+        AlbumHeadline = releaseHelper.GenerateAlbumHeadline(Artist, Title);
+        AlbumBottomline = releaseHelper.GenerateAlbumBottomline(ArtistCountry, Year);
+
+        StateHasChanged();
+    }
+
+    private void GenerateDescription()
+    {
+        if (string.IsNullOrEmpty(MusicBrainzUrl))
+        {
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        string headerStyleTags = releaseHelper.GenerateHeaderStyleTags();
+        sb.AppendLine(string.Join(ReleaseHelper.TagSeparator, headerStyleTags));
+        sb.AppendLine(ReleaseHelper.TextblockSeparator);
+        sb.AppendLine($"Artist: {Artist}");
+        sb.AppendLine($"Title: {Title}");
+
+        sb.AppendLine($"Type: {releaseHelper.GenerateReleaseType()}");
+
+        if (!string.IsNullOrEmpty(ArtistCountry))
+            sb.AppendLine($"Country: {ArtistCountry}");
+
+        if (!string.IsNullOrEmpty(Year))
+            sb.AppendLine($"Year: {Year}");
+
+        if (!string.IsNullOrEmpty(Label))
+        {
+            sb.Append($"Label: {Label}");
+            if (!string.IsNullOrEmpty(CatalogueNumber) && !CatalogueNumber.Equals("none"))
+            {
+                sb.AppendLine($" — {CatalogueNumber}");
+            }
+            else
+            {
+                sb.Append(Environment.NewLine);
+            }
+        }
+
+        if (Styles.Any())
+        {
+            sb.AppendLine($"Styles: " + string.Join(", ", Styles));
+        }
+
+        sb.AppendLine($"Total Duration: {releaseHelper.CalculateDuration(release)}");
+        sb.AppendLine(ReleaseHelper.TextblockSeparator);
+        string footerStyleTags = releaseHelper.GenerateFooterStyleTags();
+        if (!string.IsNullOrEmpty(footerStyleTags))
+        {
+            sb.AppendLine(footerStyleTags);
+        }
+        sb.AppendLine($"MBID: {release.Id}");
+
+        ExtraTags = releaseHelper.GenerateExtraTags();
+
+        AlbumDescriptionText = sb.ToString();
+    }
+
+    private Release release { get; set; }
+    private string Artist { get; set; } = string.Empty;
+    private string Title { get; set; } = string.Empty;
+    private string Label { get; set; } = string.Empty;
+    private string CatalogueNumber { get; set; } = string.Empty;
+    private string ArtistCountry { get; set; } = string.Empty;
+    private string Year { get; set; } = string.Empty;
+    private string AlbumHeadline { get; set; } = string.Empty;
+    private string AlbumBottomline { get; set; } = string.Empty;
+    private string AlbumDescriptionText { get; set; } = string.Empty;
+    private string ExtraTags { get; set; } = string.Empty;
+    private List<string> Styles { get; set; } = new List<string>();
+    private ReleaseHelper releaseHelper;
+
+    private string MusicBrainzUrl { get; set; } = string.Empty;
+
+    private void ClearInputs()
+    {
+        release = null;
+        MusicBrainzUrl = string.Empty;
+        Artist = string.Empty;
+        Title = string.Empty;
+        Label = string.Empty;
+        CatalogueNumber = string.Empty;
+        ArtistCountry = string.Empty;
+        Year = string.Empty;
+        AlbumHeadline = string.Empty;
+        AlbumBottomline = string.Empty;
+        AlbumDescriptionText = string.Empty;
+        ExtraTags = string.Empty;
+        Styles.Clear();
+        releaseHelper = null;
+    }
+}

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using ReleaseLib.MusicBrainz;
 
-namespace LibraryUtils
+namespace WASM.LibraryUtils
 {
     public class ReleaseHelper
     {
