@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ReleaseLib.MusicBrainz;
+using System.Threading.Tasks;
+using Hqub.MusicBrainz.API;
+using Hqub.MusicBrainz.API.Entities;
 
 namespace WASM.LibraryUtils
 {
@@ -31,32 +33,35 @@ namespace WASM.LibraryUtils
         public string GetYear()
         {
             // TODO: There's a chance that this Year is different from the First Publish Date (in case of reissues). If it is different, we should use the original year as the primary year, and the re-issue year should be in the brackets, e.g. 2008 (1969)
-            if (_release.Date.HasValue)
+            if (!string.IsNullOrEmpty(_release.Date) && _release.Date.Length >= 4)
             {
-                return _release.Date.Value.Year.ToString();
+                return _release.Date.Substring(0, 4);
             }
             return string.Empty;
         }
 
-        public string GetArtistCountry()
+        public async Task<string> GetArtistCountry()
         {
             List<string> countries = new List<string>();
-            foreach (var artistCredit in _release.ArtistCredit)
+            using (var client = new MusicBrainzClient())
             {
-                var artist = ReleaseLib.MusicBrainz.Artist.Load(artistCredit.Artist.Id);
-                if (artist.Area != null && countries.Contains(artist.Area.Name.Trim()) == false)
+                foreach (var artistCredit in _release.Credits)
                 {
-                    // TODO: Possibility of getting a city instead of a country here. It is a BUGG!
-                    countries.Add(artist.Area.Name.Trim());
-                    Tags.Add(new Tag(artist.Area.Name.Trim(), TagType.Country));
+                    var artist = await client.Artists.GetAsync(artistCredit.Artist.Id);
+                    if (artist.Area != null && countries.Contains(artist.Area.Name.Trim()) == false)
+                    {
+                        // TODO: Possibility of getting a city instead of a country here. It is a BUGG!
+                        countries.Add(artist.Area.Name.Trim());
+                        Tags.Add(new Tag(artist.Area.Name.Trim(), TagType.Country));
+                    }
                 }
+                return string.Join(", ", countries);
             }
-            return string.Join(", ", countries);
         }
 
         public string GetCatalogueNumber()
         {
-            List<string> catalogNumbers = _release.LabelInfo.Where(x => x.Label.Name != "[no label]" && x.Label != null && x.CatalogNumber != null).Select(x => x.CatalogNumber.Trim()).ToList();
+            List<string> catalogNumbers = _release.Labels.Where(x => x.Label.Name != "[no label]" && x.Label != null && x.CatalogNumber != null).Select(x => x.CatalogNumber.Trim()).ToList();
 
             if (catalogNumbers != null && catalogNumbers.Count > 0)
             {
@@ -67,7 +72,7 @@ namespace WASM.LibraryUtils
 
         public string GetLabel()
         {
-            List<string> labels = _release.LabelInfo.Where(x => x.Label.Name != "[no label]").Select(x => x.Label.Name.Trim()).ToList();
+            List<string> labels = _release.Labels.Where(x => x.Label.Name != "[no label]").Select(x => x.Label.Name.Trim()).ToList();
             if (labels != null && labels.Count > 0)
             {
                 Tags.AddRange(labels.Select(x => new Tag(x, TagType.Label)));
@@ -85,11 +90,11 @@ namespace WASM.LibraryUtils
 
         public string GetArtist()
         {
-            if (_release.ArtistCredit != null && _release.ArtistCredit.Any())
+            if (_release.Credits != null && _release.Credits.Any())
             {
-                IEnumerable<Tag> artistTags = _release.ArtistCredit.Select(x => new Tag(x.Name.Trim(), TagType.Artist));
+                IEnumerable<Tag> artistTags = _release.Credits.Select(x => new Tag(x.Name.Trim(), TagType.Artist));
                 Tags.AddRange(artistTags);
-                return ArtistCredit.GetAsString(_release.ArtistCredit);
+                return string.Join("", _release.Credits.Select(x => x.Name + x.JoinPhrase));
             }
             return string.Empty;
         }

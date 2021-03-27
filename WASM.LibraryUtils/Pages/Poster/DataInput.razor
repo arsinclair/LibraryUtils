@@ -39,7 +39,7 @@
     private string message = "";
     private string dropClass = "";
     private bool isUploading = false;
-    private int progressPercent;
+    private string progressPercent;
     private CancellationTokenSource cancelation;
 
     protected override void OnInitialized()
@@ -76,11 +76,12 @@
                 {
                     totalRead += bytesRead;
                     await ms.WriteAsync(buffer, cancelation.Token);
-                    progressPercent = (int)((totalRead / inputFile.Size) * 100); // TODO: use this approach for progress tracking https://stackoverflow.com/a/62805273/6184866
-                    InvokeAsync(StateHasChanged);
+                    progressPercent = $"{totalRead / 1024 / 1024} MB / {inputFile.Size / 1024 / 1024} MB [{(totalRead / inputFile.Size) * 100}]"; // TODO: use this approach for progress tracking https://stackoverflow.com/a/62805273/6184866
+                    await InvokeAsync(StateHasChanged);
                 }
 
                 ms.Position = 0;
+                isUploading = false;
 
                 try
                 {
@@ -95,8 +96,6 @@
                 {
                     message = ex.ToString();
                 }
-
-                isUploading = false;
             }
         }
     }

@@ -18,10 +18,10 @@
                                 URL</span>
                         </div>
                         <input type="url" name="url" class="form-control no-right-border" value=@MusicBrainzUrl
-                            autocomplete="off">
+                               autocomplete="off">
                         <div class="input-group-append">
                             <button type="button" name="Clear" class="btn btn-outline-secondary"
-                                @onclick="ClearInputs">Clear</button>
+                                    @onclick="ClearInputs">Clear</button>
                         </div>
                     </div>
                 </div>
@@ -33,10 +33,10 @@
         <div class="splitcolumn">
             <form>
                 <TextInput Label="Artist" IconName="fa-user" @bind-Value="Artist"
-                    Description="Artist name should be written using latin or cyrilic script followed by the original script in parentheses." />
+                           Description="Artist name should be written using latin or cyrilic script followed by the original script in parentheses." />
 
                 <TextInput Label="Album" IconName="fa-compact-disc" @bind-Value="Title"
-                    Description="Album guidelines." />
+                           Description="Album guidelines." />
 
                 <div class="form-row align-items-center">
                     <div class="col">
@@ -51,19 +51,19 @@
                 <div class="form-row align-items-center">
                     <div class="col-8">
                         <TextInput Label="Artist Country" IconName="fa-globe-americas" @bind-Value="ArtistCountry"
-                            Description="Artist country information." />
+                                   Description="Artist country information." />
                     </div>
 
                     <div class="col">
                         <TextInput Label="Year" IconName="fa-calendar-day" @bind-Value="Year"
-                            Description="The year the release was first published." />
+                                   Description="The year the release was first published." />
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="dropdown">
                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Dropdown button
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -104,10 +104,10 @@
                             <span class="input-group-text text-white no-right-border unselectable">Output</span>
                         </div>
                         <textarea cols="50" class="form-control no-right-border"
-                            placeholder="Press 'Generate' button to make a description" id="inputOutput"
-                            @bind="AlbumDescriptionText"></textarea>
+                                  placeholder="Press 'Generate' button to make a description" id="inputOutput"
+                                  @bind="AlbumDescriptionText"></textarea>
                         <button type="button" name="generate" class="btn btn-outline-secondary"
-                            @onclick="GenerateDescription">Generate</button>
+                                @onclick="GenerateDescription">Generate</button>
                     </div>
                 </div>
 
@@ -116,7 +116,7 @@
                 <div class="form-group">
                     @{
                         int count = AlbumDescriptionText.Count(x => x == '#');
-                        string tagCountClassName = count > 10 ? "text-danger" : "text-white"; 
+                        string tagCountClassName = count > 10 ? "text-danger" : "text-white";
                     }
                     <label class=@tagCountClassName>Found @count tags in the description</label>
                 </div>
@@ -135,14 +135,14 @@
 </div>
 
 @code {
-    private void FileUploadedCallback(FlacFile file)
+    private async void FileUploadedCallback(FlacFile file)
     {
         string musicbrainzReleaseId = file.VorbisComment["MUSICBRAINZ_ALBUMID"].ToString();
         if (!string.IsNullOrEmpty(musicbrainzReleaseId))
         {
             ClearInputs();
             MusicBrainzUrl = "https://musicbrainz.org/release/" + musicbrainzReleaseId;
-            ProcessRelease(musicbrainzReleaseId);
+            await ProcessRelease(musicbrainzReleaseId);
         }
         else
         {
@@ -155,20 +155,24 @@
         releaseHelper.UpdateStyleTags(Styles);
     }
 
-    private void ProcessRelease(string url)
+    private async Task ProcessRelease(string id)
     {
-        release = Release.Load(url, true);
+        using (var client = new MusicBrainzClient())
+        {
+            release = await client.Releases.GetAsync(id, "artist-credits", "labels", "recordings", "release-groups", "media", "annotation", "tags", "genres");
+        }
+
         releaseHelper = new ReleaseHelper(release);
-        MusicBrainzReleaseToLocalFields(release);
+        await MusicBrainzReleaseToLocalFields(release);
     }
 
-    private void MusicBrainzReleaseToLocalFields(Release release)
+    private async Task MusicBrainzReleaseToLocalFields(Release release)
     {
         Artist = releaseHelper.GetArtist();
         Title = releaseHelper.GetTitle();
         Label = releaseHelper.GetLabel();
         CatalogueNumber = releaseHelper.GetCatalogueNumber();
-        ArtistCountry = releaseHelper.GetArtistCountry();
+        ArtistCountry = await releaseHelper.GetArtistCountry();
         Year = releaseHelper.GetYear();
         Styles = releaseHelper.GetStyles();
 
