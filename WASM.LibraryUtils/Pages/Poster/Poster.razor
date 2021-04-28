@@ -1,6 +1,8 @@
 ﻿@page "/poster"
 @using FlacLibSharp
 
+@inject MusicBrainzClient musicBrainzClient
+
 <link href="css/component-poster.css" rel="stylesheet" />
 
 <div id="main-component">
@@ -157,12 +159,9 @@
 
     private async Task ProcessRelease(string id)
     {
-        using (var client = new MusicBrainzClient())
-        {
-            release = await client.Releases.GetAsync(id, "artist-credits", "labels", "recordings", "release-groups", "media", "annotation", "tags", "genres");
-        }
-
-        releaseHelper = new ReleaseHelper(release);
+        release = await musicBrainzClient.Releases.GetAsync(id, "artist-credits", "labels", "recordings", "release-groups", "media", "annotation", "tags", "genres");
+        
+        releaseHelper = new ReleaseHelper(release, musicBrainzClient);
         await MusicBrainzReleaseToLocalFields(release);
     }
 

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Hqub.MusicBrainz.API;
 using Hqub.MusicBrainz.API.Entities;
@@ -15,12 +14,14 @@ namespace WASM.LibraryUtils
         public List<Tag> Tags;
         private List<string> UsedTags;
         private Release _release;
+        private MusicBrainzClient client;
 
-        public ReleaseHelper(Release release)
+        public ReleaseHelper(Release release, MusicBrainzClient musicBrainzClient)
         {
             Tags = new List<Tag>();
             UsedTags = new List<string>();
             _release = release;
+            client = musicBrainzClient;
         }
 
         public List<string> GetStyles()
@@ -43,20 +44,18 @@ namespace WASM.LibraryUtils
         public async Task<string> GetArtistCountry()
         {
             List<string> countries = new List<string>();
-            using (var client = new MusicBrainzClient())
+
+            foreach (var artistCredit in _release.Credits)
             {
-                foreach (var artistCredit in _release.Credits)
+                var artist = await client.Artists.GetAsync(artistCredit.Artist.Id);
+                if (artist.Area != null && countries.Contains(artist.Area.Name.Trim()) == false)
                 {
-                    var artist = await client.Artists.GetAsync(artistCredit.Artist.Id);
-                    if (artist.Area != null && countries.Contains(artist.Area.Name.Trim()) == false)
-                    {
-                        // TODO: Possibility of getting a city instead of a country here. It is a BUGG!
-                        countries.Add(artist.Area.Name.Trim());
-                        Tags.Add(new Tag(artist.Area.Name.Trim(), TagType.Country));
-                    }
+                    // TODO: Possibility of getting a city instead of a country here. It is a BUGG!
+                    countries.Add(artist.Area.Name.Trim());
+                    Tags.Add(new Tag(artist.Area.Name.Trim(), TagType.Country));
                 }
-                return string.Join(", ", countries);
             }
+            return string.Join(", ", countries);
         }
 
         public string GetCatalogueNumber()
