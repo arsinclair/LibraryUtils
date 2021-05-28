@@ -25,7 +25,6 @@ namespace WASM.LibraryUtils
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri("https://musicbrainz.org/ws/2/");
             client.DefaultRequestHeaders.UserAgent.Add(new System.Net.Http.Headers.ProductInfoHeaderValue("Hqub.MusicBrainz", "3.0-beta"));
-            client.DefaultRequestHeaders.UserAgent.Add(new System.Net.Http.Headers.ProductInfoHeaderValue("+(https://github.com/avatar29A/MusicBrainz)"));
             return client;
         }
     }
